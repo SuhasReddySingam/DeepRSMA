@@ -232,7 +232,7 @@ for train_id,test_id in kf.split(rna_dataset, rna_dataset.y):
             max_p = p[0]
             max_s = s[0]
             max_rmse =rmse
-            torch.save(model.state_dict(), 'save/' + 'model_'+str(RNA_type)+str(seed_dataset)+'_'+str(fold)+'_'+str(seed)+'.pth')
+            torch.save(model.state_dict(),'model_'+str(RNA_type)+str(seed_dataset)+'_'+str(fold)+'_'+str(seed)+'.pth')
     
     p_list.append(max_p)
     r_list.append(max_rmse)
