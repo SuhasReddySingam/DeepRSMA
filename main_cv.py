@@ -160,7 +160,7 @@ class DeepRSMA(nn.Module):
 
 
 # 10 fold
-kf = regressor_stratified_cv(n_splits=10, n_repeats=1, random_state=seed_dataset, group_count=5, strategy='uniform')
+kf = regressor_stratified_cv(n_splits=5, n_repeats=1, random_state=seed_dataset, group_count=5, strategy='uniform')
 
 
 fold = 0
