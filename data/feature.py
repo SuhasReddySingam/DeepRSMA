@@ -110,7 +110,7 @@ def bond_to_feature_vector(bond):
         safe_index(allowable_features["possible_bond_type_list"], str(bond.GetBondType())),
         allowable_features["possible_bond_stereo_list"].index(str(bond.GetStereo())),
         safe_index(allowable_features["possible_bond_direction"], str(bond.GetBondDir())),
-        # allowable_features["possible_is_conjugated_list"].index(bond.GetIsConjugated()),
+        allowable_features["possible_is_conjugated_list"].index(bond.GetIsConjugated()),
     ]
     return bond_feature
 
@@ -129,7 +129,7 @@ def get_bond_feature_dims():
                 allowable_features["possible_bond_type_list"],
                 allowable_features["possible_bond_stereo_list"],
                 allowable_features["possible_bond_direction"],
-                # allowable_features["possible_is_conjugated_list"],
+                allowable_features["possible_is_conjugated_list"],
 
             ],
         )
@@ -178,15 +178,14 @@ def atom_feature_vector_to_dict(atom_feature):
 
 
 def bond_feature_vector_to_dict(bond_feature):
-    # [bond_type_idx, bond_stereo_idx, is_conjugated_idx] = bond_feature
-    [bond_type_idx, bond_stereo_idx, bond_dict_idx] = bond_feature
+    [bond_type_idx, bond_stereo_idx, is_conjugated_idx,bond_dict_idx] = bond_feature
 
 
     feature_dict = {
         "bond_type": allowable_features["possible_bond_type_list"][bond_type_idx],
         "bond_stereo": allowable_features["possible_bond_stereo_list"][bond_stereo_idx],
         "bond_dict": allowable_features["possible_bond_direction"][bond_dict_idx],
-        # "is_conjugated": allowable_features["possible_is_conjugated_list"][is_conjugated_idx],
+        "is_conjugated": allowable_features["possible_is_conjugated_list"][is_conjugated_idx],
     }
 
     return feature_dict
