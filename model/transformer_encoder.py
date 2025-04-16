@@ -2,7 +2,6 @@ import torch
 from torch import nn
 import torch.utils.data as Data
 import torch.nn.functional as F
-from torch.autograd import Variable
 import numpy as np
 import copy
 import math

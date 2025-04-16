@@ -158,10 +158,10 @@ test_dataset = CustomDualDataset(rna_dataset_in, molecule_dataset_in)
 
 
 train_loader = DataLoader(
-    train_dataset, batch_size=8, num_workers=1, drop_last=False, shuffle=False
+    train_dataset, batch_size=8, num_workers=0, drop_last=False, shuffle=False
 )
 test_loader = DataLoader(
-    test_dataset, batch_size=1, num_workers=1, drop_last=False, shuffle=False
+    test_dataset, batch_size=1, num_workers=0, drop_last=False, shuffle=False
 )
 
 

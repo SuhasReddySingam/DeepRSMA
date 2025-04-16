@@ -3,7 +3,7 @@ from .process_data_molecule import Molecule_dataset
 from .vocab import WordVocab
 from .process_independent_rna import RNA_dataset_independent
 from .process_independent_mole import Molecule_dataset_independent
-
+from .m import MoleculeEmbedder
 
 
 __all__ = [
@@ -12,4 +12,5 @@ __all__ = [
     WordVocab,
     RNA_dataset_independent,
     Molecule_dataset_independent,
+    MoleculeEmbedder
 ]

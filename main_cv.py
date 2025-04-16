@@ -17,6 +17,7 @@ import random
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
+
 # hyperparameter
 BATCH_SIZE = 16
 EPOCH = 1500
@@ -127,7 +128,6 @@ class DeepRSMA(nn.Module):
             flag += count_i
         mole_out_graph = torch.stack(mole_out_graph).to(device)
         mole_mask_graph = torch.tensor(mask, dtype=torch.float)
-        
         context_layer, attention_score = self.cross_attention([rna_out_seq, rna_out_graph, mole_seq_emb[-1], mole_out_graph], [rna_mask_seq.to(device), rna_mask_graph.to(device), mole_mask_seq.to(device), mole_mask_graph.to(device)], device)
 
         
@@ -175,18 +175,18 @@ for train_id,test_id in kf.split(rna_dataset, rna_dataset.y):
     fold = fold + 1
 
     print("Fold", fold)
-    
+    print("Entered train")
     # Combine RNA Dataset and Mole Dataset
     train_dataset = CustomDualDataset(rna_dataset[train_id], molecule_dataset[train_id])
     test_dataset = CustomDualDataset(rna_dataset[test_id], molecule_dataset[test_id])
 
     
     train_loader = DataLoader(
-        train_dataset, batch_size=BATCH_SIZE, num_workers=1, drop_last=False, shuffle=False
+        train_dataset, batch_size=BATCH_SIZE, num_workers=0, drop_last=False, shuffle=False
     )
 
     test_loader = DataLoader(
-        test_dataset, batch_size=BATCH_SIZE, num_workers=1, drop_last=False, shuffle=False
+        test_dataset, batch_size=BATCH_SIZE, num_workers=0, drop_last=False, shuffle=False
     )
     
     

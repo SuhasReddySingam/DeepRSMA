@@ -1,8 +1,7 @@
-name: py37
+name: deepRSMA
 channels:
   - conda-forge
   - https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge
-  - http://mirrors.aliyun.com/anaconda/pkgs/main
   - defaults
 dependencies:
   - _libgcc_mutex=0.1=conda_forge
@@ -202,8 +201,7 @@ dependencies:
       - pyro-api==0.1.2
       - pyro-ppl==1.8.6
       - pystow==0.5.0
-      - python-dateutil==2.8.2
-      - pytorch-lightning==1.9.5
+      - python-dateutil==2.8.2-lightning==1.9.5
       - pytz==2023.3.post1
       - pyyaml==6.0.1
       - rdflib==6.3.2
@@ -275,4 +273,3 @@ dependencies:
       - yacs==0.1.8
       - yarl==1.9.2
       - zipp==3.15.0
-prefix: /ifs/home/huangzhijian/anaconda3/envs/py37

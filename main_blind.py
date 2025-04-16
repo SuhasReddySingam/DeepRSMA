@@ -185,11 +185,11 @@ for i, df_f in enumerate(df):
 
     
     train_loader = DataLoader(
-        train_dataset, batch_size=BATCH_SIZE, num_workers=1, drop_last=False, shuffle=False
+        train_dataset, batch_size=BATCH_SIZE, num_workers=0, drop_last=False, shuffle=False
     )
 
     test_loader = DataLoader(
-        test_dataset, batch_size=BATCH_SIZE, num_workers=1, drop_last=False, shuffle=False
+        test_dataset, batch_size=BATCH_SIZE, num_workers=0, drop_last=False, shuffle=False
     )
     
     
