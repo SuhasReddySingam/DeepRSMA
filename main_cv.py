@@ -113,11 +113,12 @@ class DeepRSMA(nn.Module):
         
         mole_seq_final = (mole_seq_emb[-1]*(mole_mask_seq.to(device).unsqueeze(dim=2))).mean(dim=1).squeeze(dim=1)
 
-
+        print("Entered forward")
         # mole graph
         flag = 0
         mole_out_graph = []
         mask = []
+        print("Starting pass")
         for i in mole_batch.graph_len:
             count_i = i
             x = mole_graph_emb[flag:flag+count_i]
