@@ -6,7 +6,7 @@ from torch_geometric.nn import GINEConv, global_mean_pool
 # Constants from your code
 num_atom_type = 119
 num_chirality_tag = 4
-num_bond_type = 5  # Matches bond_to_feature_vector output (adjust if different)
+num_bond_type = 3  # Updated to match bond_to_feature_vector output (3D vectors)
 
 class GINEConvLayer(nn.Module):
     def __init__(self, in_channels, out_channels, edge_dim):
