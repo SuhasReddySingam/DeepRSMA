@@ -113,12 +113,10 @@ class DeepRSMA(nn.Module):
         
         mole_seq_final = (mole_seq_emb[-1]*(mole_mask_seq.to(device).unsqueeze(dim=2))).mean(dim=1).squeeze(dim=1)
 
-        print("Entered forward")
         # mole graph
         flag = 0
         mole_out_graph = []
         mask = []
-        print("Starting pass")
         for i in mole_batch.graph_len:
             count_i = i
             x = mole_graph_emb[flag:flag+count_i]
@@ -228,6 +226,7 @@ for train_id,test_id in kf.split(rna_dataset, rna_dataset.y):
         p = pearsonr(y_label, y_pred)
         s = spearmanr(y_label, y_pred)
         rmse = np.sqrt(mean_squared_error(y_label, y_pred))
+        print(p[0])
         if max_p < p[0]:
             print('epo:',epo, 'pcc:',p[0],'scc: ',s[0], 'rmse:',rmse)
             max_p = p[0]
