@@ -17,7 +17,7 @@ torch.set_printoptions(profile="full")
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-hidden_dim = 16
+hidden_dim = 128
 
 EPOCH = 200
 RNA_type = 'Viral_RNA_independent'
