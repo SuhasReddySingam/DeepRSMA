@@ -172,7 +172,7 @@ model.to(device)
 y_pred_all = []
 max_p = -1
 
-optimizer = optim.Adam(model.parameters(), lr=6e-5 , weight_decay=1e-5)
+optimizer = optim.AdamW(model.parameters(), lr=6e-5 , weight_decay=1e-5)
 optimal_loss = 1e10
 loss_fct = torch.nn.MSELoss()
 for epoch in range(0,EPOCH):

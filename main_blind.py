@@ -196,7 +196,7 @@ for i, df_f in enumerate(df):
     model = DeepRSMA().to(device)
     
     
-    optimizer = optim.Adam(model.parameters(), lr=LR, weight_decay=1e-7)
+    optimizer = optim.AdamW(model.parameters(), lr=LR, weight_decay=1e-7)
     optimal_loss = 1e10
     loss_fct = torch.nn.MSELoss()
     for epo in range(EPOCH):
