@@ -1,8 +1,23 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_geometric.nn import global_mean_pool,GATConv
+from torch_geometric.nn import global_mean_pool,GATConv,global_add_pool,GATv2Conv
 
+
+class AttentivePooling(nn.Module):
+    def __init__(self, in_channels):
+        super(AttentivePooling, self).__init__()
+        self.score_fn = nn.Sequential(
+            nn.Linear(in_channels, in_channels // 2),
+            nn.ReLU(),
+            nn.Linear(in_channels // 2, 1)
+        )
+
+    def forward(self, x, batch):
+        scores = self.score_fn(x)  # (num_nodes, 1)
+        alpha = torch.softmax(scores - torch.scatter(scores.max(), batch, dim=0)[batch], dim=0)
+        emb_graph = global_add_pool(x * alpha, batch)  # (batch_size, in_channels)
+        return emb_graph
 
 # 1d CNN 
 class CNN(torch.nn.Module):
@@ -45,12 +60,13 @@ class RNA_feature_extraction(nn.Module):
         
         # RNA Seq
         self.CNN = CNN(hidden_size)
-        
+        #Attention pooling
+        self.attn_pool = AttentivePooling(hidden_size)
         
         # RNA Gra
-        self.conv1 =  GATConv(input_dim, hidden_dim, heads=4, dropout=0.1,concat=False)
-        self.conv2 =  GATConv(hidden_dim, hidden_dim, heads=4, dropout=0.1,concat=False)
-        self.conv3 =  GATConv(hidden_dim , hidden_size, dropout=0.1,concat=False)
+        self.conv1 =  GATv2Conv(input_dim, hidden_dim, heads=4, dropout=0.1,concat=False)
+        self.conv2 =  GATv2Conv(hidden_dim, hidden_dim, heads=4, dropout=0.1,concat=False)
+        self.conv3 =  GATv2Conv(hidden_dim, hidden_size, heads=1, dropout=0.1,concat=False)
         
 
         self.x_embedding = nn.Embedding(6, input_dim)
@@ -79,7 +95,7 @@ class RNA_feature_extraction(nn.Module):
         x = self.relu(self.conv2(x, edge_index))
         x = self.relu(self.conv3(x, edge_index))
         
-        emb_graph = global_mean_pool(x, data.batch)
+        emb_graph = self.attn_pool(x, data.batch)  # Replace global_mean_pool
 
         emb = F.relu(self.line_emb(emb))
         flag = 0

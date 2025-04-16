@@ -1,12 +1,37 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_geometric.nn import GINEConv, global_mean_pool
+from torch_geometric.nn import GINEConv, global_mean_pool,global_add_pool
+from torch_scatter import scatter
 
 # Constants from your code
 num_atom_type = 119
 num_chirality_tag = 4
 num_bond_type = 4  # Updated to match bond_to_feature_vector output (3D vectors)
+
+class AttentivePooling(nn.Module):
+    def __init__(self, in_channels, hidden_channels=None):
+        super(AttentivePooling, self).__init__()
+        hidden_channels = in_channels // 2 if hidden_channels is None else hidden_channels
+        
+        # Attention mechanism inspired by AttentiveFP
+        self.W = nn.Linear(in_channels, hidden_channels)
+        self.attn = nn.Linear(hidden_channels, 1)
+        self.tanh = nn.Tanh()
+
+    def forward(self, x, batch):
+        # x: (num_nodes, in_channels), batch: (num_nodes,)
+        # Compute attention scores
+        h = self.tanh(self.W(x))  # (num_nodes, hidden_channels)
+        scores = self.attn(h)  # (num_nodes, 1)
+        
+        # Normalize scores per graph using softmax
+        alpha = torch.softmax(scores.view(-1), dim=0) * scatter(torch.ones_like(scores), batch, dim=0, reduce='sum')[batch]
+        alpha = alpha.view(-1, 1)  # (num_nodes, 1)
+        
+        # Weighted sum of node features
+        graph_emb = global_add_pool(x * alpha, batch)  # (batch_size, in_channels)
+        return graph_emb
 
 class GINEConvLayer(nn.Module):
     def __init__(self, in_channels, out_channels, edge_dim):
@@ -44,6 +69,8 @@ class GCNNet(nn.Module):
         self.drug1_conv2 = GINEConvLayer(num_features_xd, num_features_xd * 3, edge_dim=num_bond_type)
         self.drug1_conv3 = GINEConvLayer(num_features_xd * 3, 128, edge_dim=num_bond_type)
 
+        self.attn_pool = AttentivePooling(in_channels=128)  # Matches drug1_conv3 output dim
+
         # Fully connected layers
         self.fc_g1 = nn.Linear(128, 1024)
         self.fc_g2 = nn.Linear(1024, 128)
@@ -72,6 +99,6 @@ class GCNNet(nn.Module):
         x1 = self.dropout(x1)
 
         # Graph-level representation
-        emb = global_mean_pool(x1, batch1)  # (batch_size, 128)
+        emb = self.attn_pool(x1, batch1)  # (batch_size, 128)
 
         return x1, emb

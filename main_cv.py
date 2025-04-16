@@ -25,7 +25,7 @@ hidden_dim = 128
 seed_dataset = 2
 seed = 1
 LR = 5e-4
-
+WARMUP_STEPS = 1000  # ~14 epochs (1151 / 16 ≈ 72 steps/epoch)
 # All RNA or 6 RNA subtype: All_sf; Aptamers; miRNA; Repeats; Ribosomal; Riboswitch; Viral_RNA;
 RNA_type = 'All_sf'
 rna_dataset = RNA_dataset(RNA_type)
@@ -188,11 +188,18 @@ for train_id,test_id in kf.split(rna_dataset, rna_dataset.y):
         test_dataset, batch_size=BATCH_SIZE, num_workers=0, drop_last=False, shuffle=False
     )
     
-    
+    TOTAL_STEPS = EPOCH * len(train_loader)
+    def lr_lambda(step):
+            if step < WARMUP_STEPS:
+                return step / max(1, WARMUP_STEPS)  # Linear warmup
+            progress = (step - WARMUP_STEPS) / max(1, TOTAL_STEPS - WARMUP_STEPS)
+            return 0.5 * (1.0 + np.cos(np.pi * progress))  # Cosine decay
     model = DeepRSMA().to(device)
     optimizer = optim.AdamW(model.parameters(), lr=LR, weight_decay=1e-7)
+    scheduler = optim.lr_scheduler.LambdaLR(optimizer, lr_lambda)
     optimal_loss = 1e10
     loss_fct = torch.nn.MSELoss()
+
 
     for epo in range(EPOCH):
         # train
@@ -203,6 +210,7 @@ for train_id,test_id in kf.split(rna_dataset, rna_dataset.y):
             loss = loss_fct(pre.squeeze(dim=1), batch_rna.y)
             loss.backward()
             optimizer.step()
+            scheduler.step()
             train_loss = train_loss + loss
         # test
         with torch.set_grad_enabled(False):
