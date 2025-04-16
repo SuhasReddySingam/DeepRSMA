@@ -212,7 +212,7 @@ for epoch in range(0,EPOCH):
             print(' ')
             print('Best:', 'epo:',epoch, 'pcc:',p[0],'scc: ',s[0],'rmse:',rmse)
 
-            torch.save(model.state_dict(), 'save/' + 'model_independent_'+str(seed)+'.pth')
+            torch.save(model.state_dict(),'model_independent_'+str(seed)+'.pth')
 
         
         model.train()
