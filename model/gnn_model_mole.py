@@ -6,22 +6,24 @@ from torch_geometric.nn import GINEConv, global_mean_pool
 # Constants from your code
 num_atom_type = 119
 num_chirality_tag = 4
-num_bond_type = 5  # Adjust if bond_to_feature_vector outputs different dimension
+num_bond_type = 5  # Matches bond_to_feature_vector output (adjust if different)
 
 class GINEConvLayer(nn.Module):
     def __init__(self, in_channels, out_channels, edge_dim):
         super(GINEConvLayer, self).__init__()
-        # MLP for GINEConv: input = node features + edge features
+        # MLP for GINEConv
         nn_layer = nn.Sequential(
-            nn.Linear(in_channels, out_channels),  # Simplified to match node dims
+            nn.Linear(in_channels, out_channels),
             nn.ReLU(),
             nn.Linear(out_channels, out_channels)
         )
         self.conv = GINEConv(nn=nn_layer, eps=0, train_eps=True)
-        self.edge_transform = nn.Linear(edge_dim, in_channels)  # Project edge features to node dim
+        # Transform edge features to match node feature dimension
+        self.edge_transform = nn.Linear(edge_dim, in_channels)
 
     def forward(self, x, edge_index, edge_attr):
-        # Transform edge features to match node feature dimension
+        # Convert edge_attr to float32 to match model weights
+        edge_attr = edge_attr.float()  # From int64 to float32
         edge_attr = self.edge_transform(edge_attr)  # (num_edges, in_channels)
         return self.conv(x, edge_index, edge_attr)
 
