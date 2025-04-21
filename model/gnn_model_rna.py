@@ -88,7 +88,10 @@ class RNA_feature_extraction(nn.Module):
         out_seq = []
         out_r = []
         mask = []
-        
+        if isinstance(node_len, int):
+            node_len = [node_len]  # Single graph
+        elif isinstance(node_len, torch.Tensor):
+            node_len = node_len.tolist()  # Batched graphs
         for i in node_len:
             count_i = i  
             
